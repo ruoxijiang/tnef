@@ -46,8 +46,9 @@
 #endif /* HAVE_GETOPT_LONG */
 
 #include "alloc.h"
-#include "tnef.h"
+//#include "tnef.h"
 #include "options.h"
+#include "node_native.h"
 
 /* COPYRIGHTS & NO_WARRANTY -- defined to make code below a little nicer to
    read */
@@ -377,7 +378,8 @@ main (int argc, char *argv[])
                  "interactive mode at the same time.\n");
         exit (1);
     }
-    int ret = parse_file (fp, out_dir, body_file, body_pref, flags);
+//    int ret = parse_file (fp, out_dir, body_file, body_pref, flags);
+    int ret = extract_files(in_file, out_dir);
     XFREE(body_pref);
     XFREE(body_file);
     fclose(fp);
