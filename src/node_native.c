@@ -23,15 +23,16 @@
 #endif /* HAVE_GETOPT_LONG */
 
 //#include "alloc.h"
-#include "tnef.h"
+// #include "tnef.h"
 #include "options.h"
 #include "node_native.h"
+#include "alloc.h"
 
-int extract_files(const char* file_name, const char* output_dir){
+int extract_files(const char* file_name, const char* output_dir, File_List* const file_list){
     FILE* fp = NULL;
     int flags = NONE;
-    char* body_file_name=strdup("message");
-    char * body_pref = strdup("rht");
+    char* body_file_name = strdup("message");
+    char* body_pref = strdup("rht");
     if(file_name){
         fp = fopen(file_name, "rb");
         if(fp == NULL){
@@ -44,7 +45,12 @@ int extract_files(const char* file_name, const char* output_dir){
     flags |= OVERWRITE;
     flags |= SAVEBODY;
     flags |= LISTMIME;
-    int ret = parse_file(fp, output_dir, body_file_name, body_pref, flags);
+
+    int ret = parse_file(fp, output_dir, body_file_name, body_pref, flags, file_list);
+
+    XFREE(body_file_name);
+    XFREE(body_pref);
+
     fclose(fp);
     return ret;
 }

@@ -55,6 +55,49 @@ typedef enum
     RTF = 'r'
 } MessageBodyTypes;
 
+void free_file_list(File_List * const file_list)
+{
+    if (file_list == NULL) {
+        return;
+    }
+
+    File_Node * pNode = *file_list;
+
+    while (pNode != NULL) {
+        File_Node * next = pNode->next;
+        XFREE(pNode->info.file_name);
+        XFREE(pNode->info.path);
+        XFREE(pNode->info.mime_type);
+        XFREE(pNode->info.content_id);
+        XFREE(pNode);
+        pNode = next;
+    }
+
+    *file_list = NULL;
+}
+
+
+static void add_file_to_list(File_List * const list, const File * file)
+{
+    if (file == NULL) {
+        return;
+    }
+
+    File_Node * fileNode = (File_Node *)malloc(sizeof(File_Node));
+    if (fileNode == NULL) {
+        return;
+    }
+    memset(fileNode, 0, sizeof(File_Node));
+
+    fileNode->info.file_name = strdup(file->name);
+    fileNode->info.path = strdup(file->path);
+    fileNode->info.len = file->len;
+    fileNode->info.mime_type = strdup(file->mime_type);
+    fileNode->info.content_id = strdup(file->content_id);
+    fileNode->next = *list;
+    *list = fileNode;
+}
+
 /* Reads and decodes a object from the stream */
 
 static Attr*
@@ -244,9 +287,9 @@ data_left (FILE* input_file)
 
 /* The entry point into this module.  This parses an entire TNEF file. */
 int
-parse_file (FILE* input_file, char* directory,
+parse_file (FILE* input_file, const char* directory,
             char *body_filename, char *body_pref,
-            int flags)
+            int flags, File_List* const file_list)
 {
     uint32 d;
     uint16 key;
@@ -283,6 +326,7 @@ parse_file (FILE* input_file, char* directory,
         {
             if (file)
             {
+                add_file_to_list(file_list, file);
                 file_write (file, directory);
                 file_free (file);
             }
@@ -345,6 +389,7 @@ parse_file (FILE* input_file, char* directory,
 
     if (file)
     {
+        add_file_to_list(file_list, file);
         file_write (file, directory);
         file_free (file);
         XFREE (file);
@@ -370,6 +415,7 @@ parse_file (FILE* input_file, char* directory,
                 int j = 0;
                 for (; files[j]; j++)
                 {
+                    add_file_to_list(file_list, files[j]);
                     file_write(files[j], directory);
                     file_free (files[j]);
                     XFREE(files[j]);

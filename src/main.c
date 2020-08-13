@@ -357,31 +357,49 @@ main (int argc, char *argv[])
     }
 
     /* open the file */
-    if (in_file)
+    // if (in_file)
+    // {
+    //     fp = fopen (in_file, "rb");
+    //     if (fp == NULL)
+    //     {
+    //         perror (in_file);
+    //         exit (1);
+    //     }
+    // }
+    // else
+    // {
+    //     fp = stdin;
+    // }
+
+    // if (fp == stdin && flags & CONFIRM)
+    // {
+    //     fprintf (stderr,
+    //              "Cannot read file from STDIN and use "
+    //              "interactive mode at the same time.\n");
+    //     exit (1);
+    // }
+
+    // int ret = parse_file (fp, out_dir, body_file, body_pref, flags);
+
+    File_List file_list = NULL;
+
+    int ret = extract_files(in_file, out_dir, &file_list);
+
+    for (File_Node* p = file_list; p != NULL; p++)
     {
-        fp = fopen (in_file, "rb");
-        if (fp == NULL)
-        {
-            perror (in_file);
-            exit (1);
-        }
-    }
-    else
-    {
-        fp = stdin;
+        // p->info.file_name;
+        // p->info.path;
+        // p->info.len;
+        // p->info.mime_type;
+        // p->info.content_id;
     }
 
-    if (fp == stdin && flags & CONFIRM)
-    {
-        fprintf (stderr,
-                 "Cannot read file from STDIN and use "
-                 "interactive mode at the same time.\n");
-        exit (1);
-    }
-//    int ret = parse_file (fp, out_dir, body_file, body_pref, flags);
-    int ret = extract_files(in_file, out_dir);
+    XFREE(in_file);
+    XFREE(out_dir);
     XFREE(body_pref);
     XFREE(body_file);
-    fclose(fp);
+    free_file_list(&file_list);
+
+    // fclose(fp);
     return  ret;
 }

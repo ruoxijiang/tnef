@@ -33,10 +33,28 @@
 /* TNEF signature.  Equivalent to the magic cookie for a TNEF file. */
 #define TNEF_SIGNATURE   0x223e9f78
 
+typedef struct {
+    char* file_name;
+    char* path;
+    size_t len;
+    char* mime_type;
+    char* content_id; //cid;
+}File_Info;
+
+typedef struct SFileNode{
+    File_Info info;
+    struct SFileNode* next;
+}File_Node;
+
+typedef File_Node* File_List;
+
+void free_file_list(File_List * const file_list);
+
+
 /* Main entrance point to tnef processing */
 extern int
-parse_file(FILE *input, char * output_dir,
+parse_file(FILE *input, const char * output_dir,
            char *body_file, char *body_pref,
-           int flags);
+           int flags, File_List* const file_list);
 
 #endif /* !TNEF_H */
