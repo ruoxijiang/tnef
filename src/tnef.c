@@ -89,11 +89,11 @@ static void add_file_to_list(File_List * const list, const File * file)
     }
     memset(fileNode, 0, sizeof(File_Node));
 
-    fileNode->info.file_name = strdup(file->name);
-    fileNode->info.path = strdup(file->path);
+    fileNode->info.file_name = strdup(file->name != NULL ? file->name : "");
+    fileNode->info.path = strdup(file->path != NULL ? file->path : "");
     fileNode->info.len = file->len;
-    fileNode->info.mime_type = strdup(file->mime_type);
-    fileNode->info.content_id = strdup(file->content_id);
+    fileNode->info.mime_type = strdup(file->mime_type != NULL ? file->mime_type : "");
+    fileNode->info.content_id = strdup(file->content_id != NULL ? file->content_id : "");
     fileNode->next = *list;
     *list = fileNode;
 }

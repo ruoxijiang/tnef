@@ -394,8 +394,6 @@ main (int argc, char *argv[])
         // p->info.content_id;
     }
 
-    XFREE(in_file);
-    XFREE(out_dir);
     XFREE(body_pref);
     XFREE(body_file);
     free_file_list(&file_list);
